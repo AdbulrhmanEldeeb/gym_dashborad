@@ -46,4 +46,4 @@ USER appuser
 EXPOSE 8080
 
 # Command to run the application
-CMD ["streamlit", "run", "main.py"]
+CMD ["streamlit", "run", "main.py","--server.port=8080"]
