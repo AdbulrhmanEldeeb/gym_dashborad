@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#6200EA"  # Deep purple for a modern feel
+backgroundColor = "#FAFAFA"  # Off-white for a fresh look
+secondaryBackgroundColor = "#EAEAEA"  # Light gray for sidebar contrast
+textColor = "#212121"  # Dark gray for excellent readability
+font = "serif"  # Classic, elegant typography
