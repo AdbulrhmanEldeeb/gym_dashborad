@@ -1,7 +1,10 @@
+import os 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 class PageConfig:
     # Visualizations folder
     VISUALIZATIONS_FOLDER = r'visualizations'
-    
+    ASSOCIATIONS_FIGURES_FOLDER = os.path.join(BASE_DIR,'..', 'assosiations_figures')
+
     # Page configuration
     page_title="Comprehensive Gym Analytics Dashboard"
     page_icon="💪"

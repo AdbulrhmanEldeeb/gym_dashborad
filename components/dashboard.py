@@ -4,10 +4,16 @@ from components.utils import load_plotly_html
 from components.categories import ChartCategories
 from components.enums import DashboardSections
 from config.config import configure
+
 class GymAnalyticsDashboard:
     def __init__(self):
         self.vis_folder = configure.VISUALIZATIONS_FOLDER
         self.chart_categories = ChartCategories(self.vis_folder).chart_categories
+        self.chart_categories[DashboardSections.ASSOCIATIONS.value] = [
+            'association_rules_network.png',
+            'association_rules_scatter.png', 
+            'frequent_itemsets_plot.png'
+        ]
 
     def setup_page(self):
         st.set_page_config(
@@ -41,55 +47,63 @@ class GymAnalyticsDashboard:
         st.markdown(configure.overview_tail)
 
     def render_section(self, page):
-        st.title(f"🔍 {page}")
-        category_charts = self.chart_categories[page]
+        if page == DashboardSections.ASSOCIATIONS.value:
+            st.title(f"🔗 {page}")
+            for figure_name in self.chart_categories[page]:
+                figure_path = os.path.join(configure.ASSOCIATIONS_FIGURES_FOLDER, figure_name)
+                st.subheader(figure_name.replace('.png', '').replace('_', ' '))
+                st.image(figure_path, use_container_width=True)
+        else: 
 
-        for i, chart_name in enumerate(category_charts):
-            chart_path = os.path.join(self.vis_folder, chart_name)
+            st.title(f"🔍 {page}")
+            category_charts = self.chart_categories[page]
 
-            container_id = f"chart_{i}"
-            html_content = load_plotly_html(chart_path)
+            for i, chart_name in enumerate(category_charts):
+                chart_path = os.path.join(self.vis_folder, chart_name)
 
-            # Combined HTML with fullscreen functionality
-            full_html = f"""
-            <div id="{container_id}" style="width: 100%; height: 500px;">
-                {html_content}
-            </div>
-            <button id="fullscreen-btn-{i}" onclick="
-                const element = document.getElementById('{container_id}').querySelector('.plotly-graph-div');
-                if (element.requestFullscreen) {{
-                    element.requestFullscreen();
-                }} else if (element.mozRequestFullScreen) {{
-                    element.mozRequestFullScreen();
-                }} else if (element.webkitRequestFullscreen) {{
-                    element.webkitRequestFullscreen();
-                }} else if (element.msRequestFullscreen) {{
-                    element.msRequestFullscreen();
-                }}
-            " style="
-                margin: 10px 0;
-                padding: 8px 15px;
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;">
-                View Fullscreen
-            </button>
+                container_id = f"chart_{i}"
+                html_content = load_plotly_html(chart_path)
 
-            <script>
-            document.addEventListener("fullscreenchange", function() {{
-                const btn = document.getElementById("fullscreen-btn-{i}");
-                if (!document.fullscreenElement) {{
-                    btn.style.display = "block";
-                }}
-            }});
-            </script>
-            """
+                # Combined HTML with fullscreen functionality
+                full_html = f"""
+                <div id="{container_id}" style="width: 100%; height: 500px;">
+                    {html_content}
+                </div>
+                <button id="fullscreen-btn-{i}" onclick="
+                    const element = document.getElementById('{container_id}').querySelector('.plotly-graph-div');
+                    if (element.requestFullscreen) {{
+                        element.requestFullscreen();
+                    }} else if (element.mozRequestFullScreen) {{
+                        element.mozRequestFullScreen();
+                    }} else if (element.webkitRequestFullscreen) {{
+                        element.webkitRequestFullscreen();
+                    }} else if (element.msRequestFullscreen) {{
+                        element.msRequestFullscreen();
+                    }}
+                " style="
+                    margin: 10px 0;
+                    padding: 8px 15px;
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;">
+                    View Fullscreen
+                </button>
 
-            # Full-width display
-            st.subheader(chart_name.replace('.html', '').replace('_', ' '))
-            st.components.v1.html(full_html, height=600)
+                <script>
+                document.addEventListener("fullscreenchange", function() {{
+                    const btn = document.getElementById("fullscreen-btn-{i}");
+                    if (!document.fullscreenElement) {{
+                        btn.style.display = "block";
+                    }}
+                }});
+                </script>
+                """
+
+                # Full-width display
+                st.subheader(chart_name.replace('.html', '').replace('_', ' '))
+                st.components.v1.html(full_html, height=600)
 
 # Run dashboard
 if __name__ == "__main__":
